@@ -5,11 +5,9 @@ frame = Ether(dst="ff:ff:ff:ff:ff:ff")
 
 arp_packet = frame/ARP(pdst="10.5.1.0/24")
 
-IP_MAC_responses, unans = sr(arp_packet, timeout=2)
+IP_MAC_responses, unans = srp(arp_packet, timeout=2)
 
-
-print(IP_MAC_responses.summary())
-#i = IP_MAC_responses.summary(lambda s,r: r.sprintf("%Ether.src% %ARP.psrc%"))
+print(IP_MAC_responses[0][1].hwsrc)
 
 #victim_IP = djjdjddjd
 
