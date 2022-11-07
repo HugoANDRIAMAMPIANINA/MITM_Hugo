@@ -13,6 +13,7 @@ print(IP_MAC_responses[1][1].hwsrc)
 print(IP_MAC_responses[1][1].psrc)
 print(IP_MAC_responses[2][1].hwsrc)
 print(IP_MAC_responses[2][1].psrc)
+print(len(IP_MAC_responses))
 
 
 #victim_IP = djjdjddjd
