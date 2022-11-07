@@ -5,7 +5,8 @@ frame = Ether(dst="ff:ff:ff:ff:ff:ff")
 
 arp_packet = frame/ARP(pdst="10.5.1.0/24")
 
-IP_MAC_responses, unans = srp(arp_packet, timeout=2)
+IP_MAC_responses, unans = srp(arp_packet, timeout=2)[0]
+
 
 print(IP_MAC_responses[0][1].hwsrc)
 print(IP_MAC_responses[0][1].psrc)
